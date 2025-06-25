@@ -2,10 +2,9 @@ pipeline {
     agent any
 
     environment {
-        TF_VAR_access_key       = credentials('AWS_ACCESS_KEY')
-        TF_VAR_secret_key       = credentials('AWS_SECRET_KEY')
-        TF_VAR_ansible_key_path = '/var/lib/jenkins/.ssh/ansiblekey.pem'
-    }
+    AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY')
+    AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_KEY')
+}
 
     stages {
         stage('Clone Terraform Repo') {
