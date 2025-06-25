@@ -43,3 +43,14 @@ variable "ansible_key_path" {
   description = "Path to Ansible private key file"
   type        = string
 }
+
+variable "access_key" {
+  description = "AWS Access Key"
+  type        = string
+}
+
+variable "secret_key" {
+  description = "AWS Secret Key"
+  type        = string
+}
+
