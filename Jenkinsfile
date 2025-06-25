@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Clone Terraform Repo') {
             steps {
-                git 'https://github.com/kawalpreetkour/sonarqube-infra.git'
+                git branch: 'main', url: 'https://github.com/kawalpreetkour/sonarqube-infra.git'
             }
         }
 
