@@ -36,22 +36,20 @@ pipeline {
             }
         }
 
+        stage('Setup SSH Key') {
+            steps {
+                withCredentials([file(credentialsId: 'ansiblekey.pem', variable: 'KEYFILE')]) {
+                    sh '''
+                        mkdir -p /var/lib/jenkins/.ssh
+                        cp "$KEYFILE" /var/lib/jenkins/.ssh/ansiblekey.pem
+                        chmod 400 /var/lib/jenkins/.ssh/ansiblekey.pem
 
-
-stage('Setup SSH Key') {
-    steps {
-        withCredentials([file(credentialsId: 'ansiblekey.pem', variable: 'KEYFILE')]) {
-            sh '''
-                mkdir -p /var/lib/jenkins/.ssh
-                cp "$KEYFILE" /var/lib/jenkins/.ssh/ansiblekey.pem
-                chmod 400 /var/lib/jenkins/.ssh/ansiblekey.pem
-
-                echo "Host *" > /var/lib/jenkins/.ssh/config
-                echo "    StrictHostKeyChecking no" >> /var/lib/jenkins/.ssh/config
-            '''
+                        echo "Host *" > /var/lib/jenkins/.ssh/config
+                        echo "    StrictHostKeyChecking no" >> /var/lib/jenkins/.ssh/config
+                    '''
+                }
+            }
         }
-    }
-}
 
         stage('Run Ansible Playbook') {
             steps {
@@ -60,6 +58,12 @@ stage('Setup SSH Key') {
                     ansible-playbook -i aws_ec2.yaml SonarQube.yml
                 '''
             }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
         }
     }
 }
