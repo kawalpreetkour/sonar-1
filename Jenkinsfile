@@ -36,15 +36,6 @@ pipeline {
             }
         }
 
-stage('Install Dependencies') {
-    steps {
-        sh '''
-            sudo apt update -y
-            sudo apt install -y python3-pip ansible
-            pip3 install --upgrade boto3 botocore
-        '''
-    }
-}
 
 
         stage('Setup SSH Key') {
