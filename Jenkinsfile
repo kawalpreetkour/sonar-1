@@ -38,23 +38,20 @@ pipeline {
 
 
 
-        stage('Setup SSH Key') {
-            steps {
-                withCredentials([sshUserPrivateKey(
-                    credentialsId: 'ansiblekey.pem',
-                    keyFileVariable: 'KEYFILE',
-                    usernameVariable: 'SSH_USER'
-                )]) {
-                    sh '''
-                        mkdir -p ~/.ssh
-                        cp $KEYFILE ~/.ssh/ansiblekey.pem
-                        chmod 777 ~/.ssh/ansiblekey.pem
-                        echo "Host *" > ~/.ssh/config
-                        echo "    StrictHostKeyChecking no" >> ~/.ssh/config
-                    '''
-                }
-            }
+stage('Setup SSH Key') {
+    steps {
+        withCredentials([file(credentialsId: 'ansiblekey.pem', variable: 'KEYFILE')]) {
+            sh '''
+                mkdir -p /var/lib/jenkins/.ssh
+                cp "$KEYFILE" /var/lib/jenkins/.ssh/ansiblekey.pem
+                chmod 400 /var/lib/jenkins/.ssh/ansiblekey.pem
+
+                echo "Host *" > /var/lib/jenkins/.ssh/config
+                echo "    StrictHostKeyChecking no" >> /var/lib/jenkins/.ssh/config
+            '''
         }
+    }
+}
 
         stage('Run Ansible Playbook') {
             steps {
