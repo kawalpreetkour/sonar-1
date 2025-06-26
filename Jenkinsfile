@@ -38,13 +38,11 @@ pipeline {
 
 stage('Install Dependencies') {
     steps {
-        withCredentials([string(credentialsId: 'UBUNTU_PASSWORD', variable: 'PASS')]) {
-            sh '''
-                echo "$PASS" | sudo -S apt update -y
-                echo "$PASS" | sudo -S apt install -y python3-pip ansible
-                pip3 install --upgrade boto3 botocore
-            '''
-        }
+        sh '''
+            sudo apt update -y
+            sudo apt install -y python3-pip ansible
+            pip3 install --upgrade boto3 botocore
+        '''
     }
 }
 
