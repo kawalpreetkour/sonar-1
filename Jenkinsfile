@@ -13,15 +13,16 @@ pipeline {
             }
         }
 
-        stage('Terraform Init') {
-            steps {
-                sh '''
-                rm -rf .terraform
-                rm -f terraform.lock.hcl
-                terraform init -upgrade
-                '''
-            }
-        }
+stage('Terraform Init') {
+    steps {
+        sh '''
+        rm -rf .terraform
+        rm -f terraform.lock.hcl
+        terraform init -upgrade
+        '''
+    }
+}
+
 
         stage('Terraform Plan') {
             steps {
@@ -40,25 +41,18 @@ pipeline {
             }
         }
 
- stage('Run Ansible Playbook') {
-    steps {
-        dir('ansible-role') {
-            sh '''
-            export PATH=$HOME/.local/bin:$PATH
-            export ANSIBLE_COLLECTIONS_PATHS=$HOME/.ansible/collections
 
-            echo "==================== Inventory Graph ===================="
-            ansible-inventory -i aws_ec2.yaml --graph
 
-            echo "==================== Ping Test ===================="
-            ansible -i aws_ec2.yaml tag_sonarqube_sonarqube -m ping || true
-
-            echo "==================== Playbook Execution ===================="
-            ansible-playbook -i aws_ec2.yaml -l tag_sonarqube_sonarqube SonarQube.yml
-            '''
+        stage('Run Ansible Playbook') {
+            steps {
+                dir('ansible-role') {
+                    sh '''
+                    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                    ANSIBLE_CONFIG=ansible.cfg ansible-playbook SonarQube.yml
+                    '''
+                }
+            }
         }
-    }
-}
-
     }
 }
