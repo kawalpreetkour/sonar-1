@@ -4,7 +4,6 @@ pipeline {
     environment {
         AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY')
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_KEY')
-        
     }
 
     stages {
@@ -14,16 +13,15 @@ pipeline {
             }
         }
 
-stage('Terraform Init') {
-    steps {
-        sh '''
-        rm -rf .terraform
-        rm -f terraform.lock.hcl
-        terraform init -upgrade
-        '''
-    }
-}
-
+        stage('Terraform Init') {
+            steps {
+                sh '''
+                rm -rf .terraform
+                rm -f terraform.lock.hcl
+                terraform init -upgrade
+                '''
+            }
+        }
 
         stage('Terraform Plan') {
             steps {
@@ -42,27 +40,24 @@ stage('Terraform Init') {
             }
         }
 
+        stage('Run Ansible Playbook') {
+            steps {
+                dir('ansible-role') {
+                    sh '''
+                    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 
+                    echo "==================== Inventory Graph ===================="
+                    ansible-inventory -i aws_ec2.yaml --graph
 
-stage('Run Ansible Playbook') {
-    steps {
-        dir('ansible-role') {
-            sh '''
-            export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-            export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                    echo "==================== Ping Test ===================="
+                    ansible -i aws_ec2.yaml tag_sonarqube_sonarqube -m ping || true
 
-            echo "==================== Inventory Graph ===================="
-            ansible-inventory -i aws_ec2.yaml --graph
-
-            echo "==================== Ping Test ===================="
-            ansible -i aws_ec2.yaml tag_sonarqube_sonarqube -m ping || true
-
-            echo "==================== Playbook Execution ===================="
-            ansible-playbook -i aws_ec2.yaml -l tag_sonarqube_sonarqube SonarQube.yml
-            '''
+                    echo "==================== Playbook Execution ===================="
+                    ansible-playbook -i aws_ec2.yaml -l tag_sonarqube_sonarqube SonarQube.yml
+                    '''
+                }
+            }
         }
     }
-}
-
- }
 }
