@@ -13,11 +13,16 @@ pipeline {
             }
         }
 
-        stage('Terraform Init') {
-            steps {
-                sh 'terraform init'
-            }
-        }
+stage('Terraform Init') {
+    steps {
+        sh '''
+        rm -rf .terraform
+        rm -f terraform.lock.hcl
+        terraform init
+        '''
+    }
+}
+
 
         stage('Terraform Plan') {
             steps {
