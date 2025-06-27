@@ -10,4 +10,4 @@ hostnames:
   - private-ip-address
 
 compose:
-  ansible_ssh_common_args: "'-o ProxyCommand=ssh -i ~/.ssh/ansiblekey.pem -W %h:%p ubuntu@{{ lookup(\"aws_ec2\", \"tag:Name=sonarqube-bastion\", region=\"ap-south-1\") | json_query(\"[0].public_ip_address\") }}'"
+  ansible_ssh_common_args: "'-o ProxyCommand=ssh -i /var/lib/jenkins/.ssh/ansiblekey.pem -W %h:%p ubuntu@{{ lookup(\"aws_ec2\", \"tag:Name=sonarqube-bastion\", region=\"ap-south-1\") | json_query(\"[0].public_ip_address\") }}'"
