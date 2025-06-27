@@ -18,7 +18,7 @@ stage('Terraform Init') {
         sh '''
         rm -rf .terraform
         rm -f terraform.lock.hcl
-        terraform init
+        terraform init -upgrade
         '''
     }
 }
