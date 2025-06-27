@@ -44,16 +44,25 @@ stage('Terraform Init') {
 
 
 
-        stage('Run Ansible Playbook') {
-            steps {
-                dir('ansible-role') {
-                    sh '''
-                    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-                    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-                    ANSIBLE_CONFIG=ansible.cfg ansible-playbook SonarQube.yml
-                    '''
-                }
-            }
+stage('Run Ansible Playbook') {
+    steps {
+        dir('ansible-role') {
+            sh '''
+            export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+
+            echo "==================== Inventory Graph ===================="
+            ansible-inventory -i aws_ec2.yaml --graph
+
+            echo "==================== Ping Test ===================="
+            ansible -i aws_ec2.yaml tag_Name_sonarqube_sonarqube -m ping || true
+
+            echo "==================== Playbook Execution ===================="
+            ansible-playbook -i aws_ec2.yaml SonarQube.yml
+            '''
         }
+    }
+}
+
     }
 }
