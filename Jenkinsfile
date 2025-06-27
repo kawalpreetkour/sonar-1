@@ -41,7 +41,7 @@ pipeline {
                 sh '''
                 sudo apt-get update
                 sudo apt-get install -y python3-pip
-                pip3 install ansible boto3 botocore amazon.aws
+                pip3 install ansible boto boto3 botocore
                 ansible-galaxy collection install amazon.aws
                 '''
             }
@@ -53,8 +53,7 @@ pipeline {
                     sh '''
                     export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
                     export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-
-                    ansible-playbook SonarQube.yml
+                    ANSIBLE_CONFIG=ansible.cfg ansible-playbook SonarQube.yml
                     '''
                 }
             }
