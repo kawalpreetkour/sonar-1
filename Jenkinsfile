@@ -41,19 +41,6 @@ stage('Terraform Init') {
             }
         }
 
-stage('Install Ansible & Boto') {
-    when {
-        expression { return params.INSTALL_DEPENDENCIES == true }
-    }
-    steps {
-        sh '''
-        apt-get update
-        apt-get install -y python3-pip
-        pip3 install ansible boto boto3 botocore
-        ansible-galaxy collection install amazon.aws
-        '''
-    }
-}
 
 
         stage('Run Ansible Playbook') {
