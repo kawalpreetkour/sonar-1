@@ -55,14 +55,13 @@ stage('Run Ansible Playbook') {
             ansible-inventory -i aws_ec2.yaml --graph
 
             echo "==================== Ping Test ===================="
-            ansible -i aws_ec2.yaml tag_sonarqube_sonarqube -m ping || true
+            ansible -i aws_ec2.yaml tag_Name_sonarqube_sonarqube -m ping || true
 
             echo "==================== Playbook Execution ===================="
-            ansible-playbook -i aws_ec2.yaml -l tag_sonarqube_sonarqube SonarQube.yml
+            ansible-playbook -i aws_ec2.yaml -l tag_Name_sonarqube_sonarqube SonarQube.yml
             '''
         }
     }
 }
-
-    }
+ }
 }
