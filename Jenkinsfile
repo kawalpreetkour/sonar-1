@@ -40,24 +40,25 @@ pipeline {
             }
         }
 
-        stage('Run Ansible Playbook') {
-            steps {
-                dir('ansible-role') {
-                    sh '''
-                    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-                    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+ stage('Run Ansible Playbook') {
+    steps {
+        dir('ansible-role') {
+            sh '''
+            export PATH=$HOME/.local/bin:$PATH
+            export ANSIBLE_COLLECTIONS_PATHS=$HOME/.ansible/collections
 
-                    echo "==================== Inventory Graph ===================="
-                    ansible-inventory -i aws_ec2.yaml --graph
+            echo "==================== Inventory Graph ===================="
+            ansible-inventory -i aws_ec2.yaml --graph
 
-                    echo "==================== Ping Test ===================="
-                    ansible -i aws_ec2.yaml tag_sonarqube_sonarqube -m ping || true
+            echo "==================== Ping Test ===================="
+            ansible -i aws_ec2.yaml tag_sonarqube_sonarqube -m ping || true
 
-                    echo "==================== Playbook Execution ===================="
-                    ansible-playbook -i aws_ec2.yaml -l tag_sonarqube_sonarqube SonarQube.yml
-                    '''
-                }
-            }
+            echo "==================== Playbook Execution ===================="
+            ansible-playbook -i aws_ec2.yaml -l tag_sonarqube_sonarqube SonarQube.yml
+            '''
         }
+    }
+}
+
     }
 }
