@@ -1,6 +1,6 @@
 ---
 - name: Install SonarQube and PostgreSQL
-  hosts: tag_Name_sonarqube_sonarqube
+  hosts: tag_sonarqube_sonarqube
   become: true
 
   roles:
