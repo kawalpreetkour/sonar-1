@@ -40,24 +40,33 @@ pipeline {
             }
         }
 
-        stage('Run Ansible Playbook') {
-            steps {
-                dir('ansible-role') {
-                    sh '''
-                    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-                    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+        sstage('Run Ansible Playbook') {
+    environment {
+        PATH = "/home/ubuntu/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    }
+    steps {
+        dir('ansible-role') {
+            sh '''
+            export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 
-                    echo "✅ Checking Ansible Inventory:"
-                    ansible-inventory -i aws_ec2.yaml --graph
+            echo "✅ Checking Ansible Inventory:"
+            ansible-inventory -i aws_ec2.yaml --graph
 
-                    echo "✅ Pinging Hosts:"
-                    ansible -i aws_ec2.yaml tag_sonarqube_sonarqube -m ping || true
+            echo "✅ Pinging Hosts:"
+            ansible -i aws_ec2.yaml tag_sonarqube_sonarqube -m ping || true
 
-                    echo "🚀 Running Playbook:"
-                    ansible-playbook -i aws_ec2.yaml SonarQube.yml
-                    '''
-                }
-            }
+            echo "🚀 Running Playbook:"
+            ansible-playbook -i aws_ec2.yaml SonarQube.yml
+            '''
         }
+    }
+}
+stage('Output ALB DNS') {
+    steps {
+        sh 'terraform output alb_dns_name'
+    }
+}
+
     }
 }
