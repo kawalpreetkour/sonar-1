@@ -77,6 +77,15 @@ resource "aws_security_group" "sonarqube_sg" {
     description     = "SonarQube UI via ALB"
   }
 
+  # 🆕 SSH from Jenkins EC2 via VPC Peering
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["172.31.0.0/16"]  # Jenkins VPC CIDR
+    description = "SSH from Jenkins VPC via peering"
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -88,3 +97,5 @@ resource "aws_security_group" "sonarqube_sg" {
     Name = "${var.project}-sonarqube-sg"
   }
 }
+
+  

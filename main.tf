@@ -121,3 +121,17 @@ module "alb" {
 }
 
 
+module "vpc_peering" {
+  source = "./modules/vpc-peering"
+
+  name                     = "jenkins-to-sonarqube"
+  region                   = "ap-south-1"
+
+  requester_vpc_id         = "vpc-0b5687e42e6f2965d"              # Jenkins VPC
+  requester_cidr           = "172.31.0.0/16"
+  requester_route_table_id = "rtb-0214d94fcba456784"
+
+  accepter_vpc_id          = module.vpc.vpc_id                   # SonarQube VPC
+  accepter_cidr            = var.vpc_cidr                        # SonarQube VPC CIDR
+  accepter_route_table_id  = module.route_tables.private_route_table_id
+}
