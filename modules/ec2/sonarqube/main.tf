@@ -12,5 +12,6 @@ resource "aws_instance" "this" {
 
   tags = {
     Name = "${var.project}-sonarqube"
+    sonarqube  = "sonarqube"
   }
 }
